@@ -1,39 +1,30 @@
 #ifndef BLE_EMULATOR_H
 #define BLE_EMULATOR_H
 
-#include "VirtualKeyboard.h"
-#include "VirtualMouse.h"
-#include <winrt/Windows.Devices.Bluetooth.GenericAttributeProfile.h>
-#include <string>
-#include <thread>
-#include <memory>
-#include <atomic>
-#include <functional>
+#ifdef BLEEMULATOR_EXPORTS
+#define BLEEMULATOR_API __declspec(dllexport)  // 导出类和函数
+#else
+#define BLEEMULATOR_API __declspec(dllimport)  // 导入类和函数
+#endif
 
-class BleEmulator {
+// 前向声明实现类
+class BleEmulatorImpl;
+class VirtualMouse;
+class VirtualKeyboard;
+
+class BLEEMULATOR_API BleEmulator {
 public:
-    BleEmulator();
-    ~BleEmulator();
+    BleEmulator();  // 构造函数
+    ~BleEmulator(); // 析构函数
 
     void Initialize();
+    void Test();
 
     VirtualMouse* Mouse();
     VirtualKeyboard* Keyboard();
 
-    void Test();
 private:
-    void InitializeVirtualDevices();
-    void HandleKeyboardSubscribedClientsChanged(winrt::Windows::Foundation::Collections::IVectorView<
-        winrt::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSubscribedClient> const& clients);
-    void HandleMouseSubscribedClientsChanged(winrt::Windows::Foundation::Collections::IVectorView<
-        winrt::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSubscribedClient> const& clients);
-
-    std::unique_ptr<VirtualKeyboard> m_virtualKeyboard;
-    std::unique_ptr<VirtualMouse> m_virtualMouse;
-
-    std::string m_deviceName;
-
-    std::atomic<bool> m_running{ false };
+    BleEmulatorImpl* pImpl;  // 使用裸指针来避免导出 STL 类型
 };
 
 #endif // BLE_EMULATOR_H
