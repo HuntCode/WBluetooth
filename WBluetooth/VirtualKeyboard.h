@@ -31,14 +31,14 @@ private:
     static constexpr uint16_t m_hidReportReferenceDescriptorShortUuid = 0x2908;
     GattLocalDescriptorParameters m_hidKeyboardReportReferenceParameters{ GattLocalDescriptorParameters()};
 
-    //HID报告
+    //HID Report
     GattLocalCharacteristicParameters m_hidReportMapParameters{ GattLocalCharacteristicParameters()};
     GattLocalCharacteristicParameters m_hidInformationParameters{ GattLocalCharacteristicParameters()};
     GattLocalCharacteristicParameters m_hidControlPointParameters{ GattLocalCharacteristicParameters()};
     //GattLocalCharacteristicParameters m_batteryLevelParameters
     static constexpr uint32_t m_sizeOfKeyboardReportDataInBytes = 0x8;
 
-    // BLE GATT 服务结构
+	// BLE GATT Service Structure
     GattServiceProvider m_hidServiceProvider{ nullptr };
     GattLocalService m_hidService{ nullptr };
 
@@ -48,7 +48,7 @@ private:
     GattLocalCharacteristic m_hidInformation{ nullptr };
     GattLocalCharacteristic m_hidControlPoint{ nullptr };
 
-    // 状态控制
+	// State Variables
     std::mutex m_mutex;
     bool m_initializationFinished = false;
 
@@ -59,33 +59,28 @@ private:
     using SubscribedHidClientsChangedHandler = std::function<void(IVectorView<GattSubscribedClient>)>;
     SubscribedHidClientsChangedHandler m_clientChangedHandler{ nullptr };
 
-    // 工具函数
+	// Utility Functions
     static std::string StatusToString(GattServiceProviderAdvertisementStatus status);
     static std::string BufferToString(IBuffer const& buffer);
     static std::string ByteArrayToString(const std::vector<uint8_t>& bytes);
 
 public:
-    // 初始化与控制
     bool Initialize();
     void Enable();
     void Disable();
 
-    // 操作接口
     void PressKey(uint32_t ps2Set1ScanCode);
     void ReleaseKey(uint32_t ps2Set1ScanCode);
     void DirectSendReport(const std::vector<uint8_t>& reportValue);
 
-    // 回调设置
     void SetSubscribedHidClientsChangedHandler(SubscribedHidClientsChangedHandler handler);
 
 private:  
-    // 内部异步构建与逻辑
     void InitCharacteristicParameters();
     IAsyncAction CreateHidService();
     void PublishService();
     void UnpublishService();
     
-    // GATT 回调事件处理
     void HidKeyboardReport_SubscribedClientsChanged(GattLocalCharacteristic const& sender, IInspectable const& args);
     void HidControlPoint_WriteRequested(GattLocalCharacteristic const& sender, GattWriteRequestedEventArgs const& args);
     void HidServiceProvider_AdvertisementStatusChanged(GattServiceProvider const& sender, GattServiceProviderAdvertisementStatusChangedEventArgs const& args);

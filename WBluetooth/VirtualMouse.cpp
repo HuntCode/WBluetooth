@@ -21,7 +21,6 @@ std::string VirtualMouse::StatusToString(GattServiceProviderAdvertisementStatus 
 
 std::string VirtualMouse::BufferToString(winrt::Windows::Storage::Streams::IBuffer const& buffer)
 {
-    // ¿½±´Êý¾Ýµ½ std::vector
     std::vector<uint8_t> data(buffer.Length());
     DataReader::FromBuffer(buffer).ReadBytes(data);
     return ByteArrayToString(data);

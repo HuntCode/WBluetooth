@@ -8,7 +8,6 @@
 #include <sstream>
 #include <vector>
 
-// 实现类
 class BleEmulatorImpl {
 public:
     std::unique_ptr<VirtualKeyboard> m_virtualKeyboard;
@@ -16,7 +15,7 @@ public:
     std::string m_deviceName;
     std::atomic<bool> m_running{ false };
 
-    // 初始化虚拟设备
+
     void InitializeVirtualDevices() {
         m_virtualKeyboard = std::make_unique<VirtualKeyboard>();
         m_virtualKeyboard->SetSubscribedHidClientsChangedHandler(
@@ -31,7 +30,6 @@ public:
         m_virtualMouse->Enable();
     }
 
-    // 处理键盘订阅客户端变化
     void HandleKeyboardSubscribedClientsChanged(IVectorView<GattSubscribedClient> const& clients) {
         if (clients.Size() > 0) {
             auto device = BluetoothLEDevice::FromIdAsync(clients.GetAt(0).Session().DeviceId().Id()).get();
@@ -40,7 +38,6 @@ public:
         }
     }
 
-    // 处理鼠标订阅客户端变化
     void HandleMouseSubscribedClientsChanged(IVectorView<GattSubscribedClient> const& clients) {
         if (clients.Size() > 0) {
             auto device = BluetoothLEDevice::FromIdAsync(clients.GetAt(0).Session().DeviceId().Id()).get();
@@ -94,10 +91,32 @@ void BleEmulator::Test() {
     }
 }
 
-VirtualMouse* BleEmulator::Mouse() {
-    return pImpl->m_virtualMouse.get();
+void BleEmulator::VirtualMouseMove(int dx, int dy, int wheel)
+{
+	pImpl->m_virtualMouse->Move(dx, dy, wheel);
 }
 
-VirtualKeyboard* BleEmulator::Keyboard() {
-    return pImpl->m_virtualKeyboard.get();
+void BleEmulator::VirtualMousePress()
+{
+	pImpl->m_virtualMouse->Press();
+}
+
+void BleEmulator::VirtualMouseRelease()
+{
+	pImpl->m_virtualMouse->Release();
+}
+
+void BleEmulator::VirtualMouseClick()
+{
+	pImpl->m_virtualMouse->Click();
+}
+
+void BleEmulator::VirtualKeyboardPress(int ps2Set1ScanCode)
+{
+	pImpl->m_virtualKeyboard->PressKey(ps2Set1ScanCode);
+}
+
+void BleEmulator::VirtualKeyboardRelease(int ps2Set1ScanCode)
+{
+    pImpl->m_virtualKeyboard->ReleaseKey(ps2Set1ScanCode);
 }
