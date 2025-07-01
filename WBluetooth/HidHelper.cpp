@@ -43,7 +43,7 @@ uint8_t HidHelper::GetHidUsageFromPs2Set1(uint32_t scanCode)
     case 0x25: return 0x0E;  // Key location 38 ( K )
     case 0x26: return 0x0F;  // Key location 39 ( L )
     case 0x27: return 0x33;  // Key location 40 ( : ; )
-    case 0x28: return 0x34;  // Key location 41 ( �� �� )
+    case 0x28: return 0x34;  // Key location 41 ( “ ‘ )
     case 0x1C: return 0x28;  // Key location 43 ( Enter )
     case 0x2A: return 0xE1;  // Key location 44 ( L SHIFT )
     case 0x56: return 0x64;  // Key location 45 ( NONE ) **
@@ -67,6 +67,37 @@ uint8_t HidHelper::GetHidUsageFromPs2Set1(uint32_t scanCode)
     case 0xE05C: return 0xE7; // Key location 63 ( R WIN )
     case 0xE01D: return 0xE4; // Key location 64 ( R CTRL )
     case 0xE05D: return 0x65; // Key location 65 ( APP )
+
+    case 0xE048: return 0x52; // ↑ Up
+    case 0xE050: return 0x51; // ↓ Down
+    case 0xE04B: return 0x50; // ← Left
+    case 0xE04D: return 0x4F; // → Right
+        // 第一排功能键
+    case 0x01: return 0x29;  // Esc
+    case 0x3B: return 0x3A;  // F1
+    case 0x3C: return 0x3B;  // F2
+    case 0x3D: return 0x3C;  // F3
+    case 0x3E: return 0x3D;  // F4
+    case 0x3F: return 0x3E;  // F5
+    case 0x40: return 0x3F;  // F6
+    case 0x41: return 0x40;  // F7
+    case 0x42: return 0x41;  // F8
+    case 0x43: return 0x42;  // F9
+    case 0x44: return 0x43;  // F10
+    case 0x57: return 0x44;  // F11
+    case 0x58: return 0x45;  // F12
+
+        // 控制区扩展键
+    case 0xE052: return 0x49; // Insert
+    case 0xE053: return 0x4C; // Delete
+    case 0xE047: return 0x4A; // Home
+    case 0xE04F: return 0x4D; // End
+    case 0xE049: return 0x4B; // Page Up
+    case 0xE051: return 0x4E; // Page Down
+    case 0xE037: return 0x46; // Print Screen
+    case 0x46:    return 0x47; // Scroll Lock
+    case 0xE11D45: return 0x48; // Pause/Break
+
     default:
         std::cerr << "[HidHelper] Unsupported scan code: 0x" << std::hex << scanCode << std::endl;
         return 0x00;

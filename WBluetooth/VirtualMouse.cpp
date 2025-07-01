@@ -186,7 +186,7 @@ void VirtualMouse::UnpublishService()
 void VirtualMouse::Move(int dx, int dy, int wheel)
 {
     SendMouseState(m_lastLeftDown, m_lastRightDown, dx, dy, wheel).get();
-    std::this_thread::sleep_for(40ms);
+    std::this_thread::sleep_for(10ms);
 }
 
 void VirtualMouse::Press()
