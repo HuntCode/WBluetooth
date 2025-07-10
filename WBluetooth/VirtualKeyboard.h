@@ -27,9 +27,15 @@ public:
 
 private:
     GattLocalCharacteristicParameters m_hidInputReportParameters{ GattLocalCharacteristicParameters() };
+    
+	// for consumer control keys
+    GattLocalCharacteristicParameters m_hidConsumerReportParameters{ GattLocalCharacteristicParameters() };
 
     static constexpr uint16_t m_hidReportReferenceDescriptorShortUuid = 0x2908;
     GattLocalDescriptorParameters m_hidKeyboardReportReferenceParameters{ GattLocalDescriptorParameters()};
+
+    // for consumer control keys
+    GattLocalDescriptorParameters m_hidConsumerReportReferenceParameters{ GattLocalDescriptorParameters() };
 
     //HID Report
     GattLocalCharacteristicParameters m_hidReportMapParameters{ GattLocalCharacteristicParameters()};
@@ -44,6 +50,10 @@ private:
 
     GattLocalCharacteristic m_hidKeyboardReport{ nullptr };
     GattLocalDescriptor m_hidKeyboardReportReference{ nullptr };
+
+    // for consumer control keys
+    GattLocalCharacteristic m_hidConsumerReport{ nullptr };
+    GattLocalDescriptor m_hidConsumerReportReference{ nullptr };
     GattLocalCharacteristic m_hidReportMap{ nullptr };
     GattLocalCharacteristic m_hidInformation{ nullptr };
     GattLocalCharacteristic m_hidControlPoint{ nullptr };
@@ -75,6 +85,11 @@ public:
 
     void SetSubscribedHidClientsChangedHandler(SubscribedHidClientsChangedHandler handler);
 
+	// for function keys
+    void SetFunctionKeyBinding(uint8_t hidUsage, uint16_t consumerUsage);
+    void ClearFunctionKeyBinding(uint8_t hidUsage);
+    void ClearAllFunctionKeyBindings();
+
 private:  
     void InitCharacteristicParameters();
     IAsyncAction CreateHidService();
@@ -86,6 +101,10 @@ private:
     void HidServiceProvider_AdvertisementStatusChanged(GattServiceProvider const& sender, GattServiceProviderAdvertisementStatusChangedEventArgs const& args);
 
     IAsyncAction ChangeKeyStateAsync(bool isPress, uint8_t hidUsage);
+    IAsyncAction SendConsumerControlKeyAsync(bool isPress, uint16_t usage);
+
+    void InitFunctionKeyBindings();
+    std::unordered_map<uint8_t, uint16_t> m_functionKeyBindings;
 };
 
 #endif // VIRTUAL_KEYBOARD_H

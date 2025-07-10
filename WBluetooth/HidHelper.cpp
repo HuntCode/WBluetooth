@@ -118,3 +118,8 @@ uint8_t HidHelper::GetFlagOfModifierKey(uint8_t code)
     }
     return 1 << (code - 0xE0);
 }
+
+bool HidHelper::IsFunctionKey(uint8_t usageCode)
+{
+    return usageCode >= 0x3A && usageCode <= 0x45;
+}

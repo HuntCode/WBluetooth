@@ -45,7 +45,7 @@ void VirtualMouse::InitCharacteristicParameters()
     m_hidInputReportParameters.ReadProtectionLevel(GattProtectionLevel::EncryptionRequired);
 
     std::vector<uint8_t> mouseReportRef{ 
-        0x02, // Report ID: 2
+        0x03, // Report ID: 2
         0x01  // Report Type: Input
     };  
     m_hidMouseReportReferenceParameters.ReadProtectionLevel(GattProtectionLevel::EncryptionRequired);
@@ -55,7 +55,7 @@ void VirtualMouse::InitCharacteristicParameters()
             0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
             0x09, 0x02,        // Usage (Mouse)
             0xA1, 0x01,        // Collection (Application)
-            0x85, 0x02,        //   Report ID (2)
+            0x85, 0x03,        //   Report ID (3)
             0x09, 0x01,        //   Usage (Pointer)
             0xA1, 0x00,        //   Collection (Physical)
             0x05, 0x09,        //     Usage Page (Button)
