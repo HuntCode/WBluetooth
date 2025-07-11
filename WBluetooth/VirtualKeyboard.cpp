@@ -342,7 +342,7 @@ void VirtualKeyboard::InitFunctionKeyBindings()
 {
     m_functionKeyBindings = {
         { static_cast<uint8_t>(0x3A), static_cast<uint16_t>(0x0223) }, // F1 → Home
-        { static_cast<uint8_t>(0x3B), static_cast<uint16_t>(0x029F) }, // F2 → Desktop Show All Windows
+        { static_cast<uint8_t>(0x3B), static_cast<uint16_t>(0x029F) }, // F2 → 0x029F无效，仅占位，参考K580键盘，此处应该发送Ctrl（04 00 00 00 00 00 00 00） + Tab（04 2b 00 00 00 00 00 00）（0x2B（Tab 键））
         { static_cast<uint8_t>(0x3C), static_cast<uint16_t>(0x0224) }, // F3 → Back
         { static_cast<uint8_t>(0x3D), static_cast<uint16_t>(0x0221) }, // F4 → Search
         { static_cast<uint8_t>(0x3E), static_cast<uint16_t>(0x00B6) }, // F5 → Previous Track
