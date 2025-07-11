@@ -22,6 +22,26 @@ using namespace Windows::Security::Cryptography;
 
 class VirtualKeyboard
 {
+    enum class FunctionKey : uint8_t {
+        F1 = 0x3A,
+        F2 = 0x3B,
+        F3 = 0x3C,
+        F4 = 0x3D,
+        F5 = 0x3E,
+        F6 = 0x3F,
+        F7 = 0x40,
+        F8 = 0x41,
+        F9 = 0x42,
+        F10 = 0x43,
+        F11 = 0x44, // not use
+        F12 = 0x45  // not use
+    };
+
+    struct FunctionKeyMapping {
+        FunctionKey key;
+        uint16_t consumerCode;
+    };
+
 public:
     VirtualKeyboard() = default;
 
@@ -86,8 +106,8 @@ public:
     void SetSubscribedHidClientsChangedHandler(SubscribedHidClientsChangedHandler handler);
 
 	// for function keys
-    void SetFunctionKeyBinding(uint8_t hidUsage, uint16_t consumerUsage);
-    void ClearFunctionKeyBinding(uint8_t hidUsage);
+    void SetFunctionKeyBinding(FunctionKey key, uint16_t consumerUsage);
+    void ClearFunctionKeyBinding(FunctionKey key);
     void ClearAllFunctionKeyBindings();
 
 private:  
@@ -104,7 +124,7 @@ private:
     IAsyncAction SendConsumerControlKeyAsync(bool isPress, uint16_t usage);
 
     void InitFunctionKeyBindings();
-    std::unordered_map<uint8_t, uint16_t> m_functionKeyBindings;
+    std::vector<FunctionKeyMapping> m_functionKeyBindings;
 };
 
 #endif // VIRTUAL_KEYBOARD_H

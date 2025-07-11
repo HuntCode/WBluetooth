@@ -141,11 +141,13 @@ void VirtualKeyboard::PressKey(uint32_t scanCode)
 {
     uint8_t usage = HidHelper::GetHidUsageFromPs2Set1(scanCode);
 
-    auto it = m_functionKeyBindings.find(usage);
-    if (it != m_functionKeyBindings.end())
+    for (const auto& mapping : m_functionKeyBindings)
     {
-        SendConsumerControlKeyAsync(true, it->second).get();
-        return;
+        if (static_cast<uint8_t>(mapping.key) == usage)
+        {
+            SendConsumerControlKeyAsync(true, mapping.consumerCode).get();
+            return;
+        }
     }
 
     ChangeKeyStateAsync(true, usage).get();
@@ -156,11 +158,13 @@ void VirtualKeyboard::ReleaseKey(uint32_t scanCode)
     uint8_t usage = HidHelper::GetHidUsageFromPs2Set1(scanCode);
 
 
-    auto it = m_functionKeyBindings.find(usage);
-    if (it != m_functionKeyBindings.end())
+    for (const auto& mapping : m_functionKeyBindings)
     {
-        SendConsumerControlKeyAsync(false, it->second).get();
-        return;
+        if (static_cast<uint8_t>(mapping.key) == usage)
+        {
+            SendConsumerControlKeyAsync(false, mapping.consumerCode).get();
+            return;
+        }
     }
 
     ChangeKeyStateAsync(false, usage).get();
@@ -250,14 +254,25 @@ void VirtualKeyboard::SetSubscribedHidClientsChangedHandler(SubscribedHidClients
     m_clientChangedHandler = std::move(handler);
 }
 
-void VirtualKeyboard::SetFunctionKeyBinding(uint8_t hidUsage, uint16_t consumerUsage)
+void VirtualKeyboard::SetFunctionKeyBinding(FunctionKey key, uint16_t consumerUsage)
 {
-    m_functionKeyBindings[hidUsage] = consumerUsage;
+    for (auto& binding : m_functionKeyBindings) {
+        if (binding.key == key) {
+            binding.consumerCode = consumerUsage;
+            return;
+        }
+    }
+
+    m_functionKeyBindings.push_back({ key, consumerUsage});
 }
 
-void VirtualKeyboard::ClearFunctionKeyBinding(uint8_t hidUsage)
+void VirtualKeyboard::ClearFunctionKeyBinding(FunctionKey key)
 {
-    m_functionKeyBindings.erase(hidUsage);
+    auto it = std::remove_if(m_functionKeyBindings.begin(), m_functionKeyBindings.end(),
+        [key](const FunctionKeyMapping& mapping) {
+            return mapping.key == key;
+        });
+    m_functionKeyBindings.erase(it, m_functionKeyBindings.end());
 }
 
 void VirtualKeyboard::ClearAllFunctionKeyBindings()
@@ -341,15 +356,15 @@ IAsyncAction VirtualKeyboard::SendConsumerControlKeyAsync(bool isPress, uint16_t
 void VirtualKeyboard::InitFunctionKeyBindings()
 {
     m_functionKeyBindings = {
-        { static_cast<uint8_t>(0x3A), static_cast<uint16_t>(0x0223) }, // F1 → Home
-        { static_cast<uint8_t>(0x3B), static_cast<uint16_t>(0x029F) }, // F2 → 0x029F无效，仅占位，参考K580键盘，此处应该发送Ctrl（04 00 00 00 00 00 00 00） + Tab（04 2b 00 00 00 00 00 00）（0x2B（Tab 键））
-        { static_cast<uint8_t>(0x3C), static_cast<uint16_t>(0x0224) }, // F3 → Back
-        { static_cast<uint8_t>(0x3D), static_cast<uint16_t>(0x0221) }, // F4 → Search
-        { static_cast<uint8_t>(0x3E), static_cast<uint16_t>(0x00B6) }, // F5 → Previous Track
-        { static_cast<uint8_t>(0x3F), static_cast<uint16_t>(0x00CD) }, // F6 → Play/Pause
-        { static_cast<uint8_t>(0x40), static_cast<uint16_t>(0x00B5) }, // F7 → Next Track
-        { static_cast<uint8_t>(0x41), static_cast<uint16_t>(0x00E2) }, // F8 → Mute
-        { static_cast<uint8_t>(0x42), static_cast<uint16_t>(0x00EA) }, // F9 → Volume Down
-        { static_cast<uint8_t>(0x43), static_cast<uint16_t>(0x00E9) }, // F10 → Volume Up
+        { FunctionKey::F1,  0x0223 }, // F1 → Home
+        { FunctionKey::F2,  0x0000 }, // F2 → 参考K580键盘，此处应该发送Ctrl(04 00 00 00 00 00 00 00)+Tab(04 2b 00 00 00 00 00 00)(0x2B(Tab 键))
+        { FunctionKey::F3,  0x0224 }, // F3 → Back
+        { FunctionKey::F4,  0x0221 }, // F4 → Search
+        { FunctionKey::F5,  0x00B6 }, // F5 → Previous Track
+        { FunctionKey::F6,  0x00CD }, // F6 → Play/Pause
+        { FunctionKey::F7,  0x00B5 }, // F7 → Next Track
+        { FunctionKey::F8,  0x00E2 }, // F8 → Mute
+        { FunctionKey::F9,  0x00EA }, // F9 → Volume Down
+        { FunctionKey::F10, 0x00E9 }, // F10 → Volume Up
     };
 }
